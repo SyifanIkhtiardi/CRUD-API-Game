@@ -25,6 +25,7 @@ var games = []game{
 func main() {
 	router := gin.Default()
 	router.GET("/games", getGames)
+	router.GET("/games/:id", getGameById)
 	router.POST("/games", postGames)
 
 	router.Run("localhost:8080")
@@ -33,6 +34,22 @@ func main() {
 // getGames responds with the list of all games as JSON.
 func getGames(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, games)
+}
+
+// getGamesById locates the game whose ID value matches the id
+// parameter sent by client, then returns that game as a response
+func getGameById(c *gin.Context) {
+	id := c.Param("id")
+
+	// Loop over the list of games, looking for
+	// an game whose ID value matches the parameter
+	for _, a := range games {
+		if a.ID == id {
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Game not found"})
 }
 
 // postGames adds an game from JSON received in the request body.
